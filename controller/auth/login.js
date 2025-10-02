@@ -22,8 +22,13 @@ export const enteremail = async (req, res) => {
     u.Otp = otp;
     u.OtpExpireAt = Date.now() + 2 * 60 * 1000; // 2 mins
     await u.save();
-
-    await sendOtpEmail(email, otp);
+     const mailOptions = {
+    from: `${process.env.EMAIL_USER}`,
+    to: email,
+    subject: "Your OTP Code",
+    text: `Your Login OTP for AnandUtsav is ${otp}. This Otp expires in 2 mins `,
+  };
+    await sendOtpEmail(email, otp,mailOptions);
 
     return res.json({ success: true, msg: "OTP Sent" });
   } catch (err) {

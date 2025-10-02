@@ -30,9 +30,15 @@ const register = async (req, res) => {
     });
 
     await user.save();
-
-    // Send OTP email
-    await sendOtpEmail(email, otp);
+   
+ const mailOptions = {
+    from: `${process.env.EMAIL_USER}`,
+    to: email,
+    subject: "Your OTP Code",
+    text: `Your Login OTP for AnandUtsav is ${otp}. This Otp expires in 2 mins `,
+  };
+  
+  await sendOtpEmail(email, otp,mailOptions);
 
     return res.status(200).json({ success: true, msg: "OTP sent to email. Please verify." });
 

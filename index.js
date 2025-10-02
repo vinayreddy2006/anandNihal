@@ -8,6 +8,7 @@ import router from "./routes/authRoutes.js"
 
 
 import connectDB from './config/connect.js';
+import pRouter from './routes/authProviderRoutes.js';
 
 const PORT=process.env.PORT|| 4000;
 
@@ -23,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/auth',router);
-
+app.use('/provider/auth',pRouter);
 
 
 app.listen(PORT,()=>{
