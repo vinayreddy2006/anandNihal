@@ -3,6 +3,12 @@ import user from "../../model/userModel.js";
 import sendOtpEmail from "../../utils/sendOtp.js";
 import sendWelcomeEmail from "../../utils/sendWelcomeOtp.js";
 
+// Helper function to generate JWT
+const generateToken = (id, email) => {
+  return jwt.sign({ id, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+};
+
+// ✅ Step 1: Enter email → send OTP
 export const enteremail = async (req, res) => {
   const { email } = req.body;
 
@@ -22,13 +28,15 @@ export const enteremail = async (req, res) => {
     u.Otp = otp;
     u.OtpExpireAt = Date.now() + 2 * 60 * 1000; // 2 mins
     await u.save();
-     const mailOptions = {
-    from: `${process.env.EMAIL_USER}`,
-    to: email,
-    subject: "Your OTP Code",
-    text: `Your Login OTP for AnandUtsav is ${otp}. This Otp expires in 2 mins `,
-  };
-    await sendOtpEmail(email, otp,mailOptions);
+
+    const mailOptions = {
+      from: `${process.env.EMAIL_USER}`,
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your Login OTP for AnandUtsav is ${otp}. This OTP expires in 2 mins.`,
+    };
+
+    await sendOtpEmail(email, otp, mailOptions);
 
     return res.json({ success: true, msg: "OTP Sent" });
   } catch (err) {
@@ -37,6 +45,7 @@ export const enteremail = async (req, res) => {
   }
 };
 
+// ✅ Step 2: Verify OTP → login + set cookie
 export const verifyOtp = async (req, res) => {
   const { email, userOtp } = req.body;
 
@@ -54,12 +63,12 @@ export const verifyOtp = async (req, res) => {
       return res.status(400).json({ success: false, msg: "OTP required" });
     }
 
-    // ✅ Fix: Compare as string
-    if (String(userOtp) != String(u.Otp)) {
+    // Compare OTP
+    if (String(userOtp) !== String(u.Otp)) {
       return res.status(400).json({ success: false, msg: "Invalid OTP" });
     }
 
-    // ✅ Fix: Expiry check
+    // Check expiry
     if (Date.now() > u.OtpExpireAt) {
       return res.status(400).json({ success: false, msg: "OTP has expired" });
     }
@@ -70,16 +79,28 @@ export const verifyOtp = async (req, res) => {
     await u.save();
 
     // Generate JWT
-    const token = jwt.sign(
-      { id: u._id, email: u.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-  await sendWelcomeEmail(u.fullName,u.email);
+    const token = generateToken(u._id, u.email);
+
+    // ✅ Set token in cookie
+    res.cookie("token", token, {
+      httpOnly: true,     // cannot be accessed by JS
+      secure: process.env.NODE_ENV === "production", // only HTTPS in production
+      sameSite: "strict", // CSRF protection
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Send welcome email (optional)
+    await sendWelcomeEmail(u.fullName, u.email);
+
     return res.status(200).json({
       success: true,
       msg: "OTP verified successfully",
-      token,
+      token, // still return for API clients
+      user: {
+        id: u._id,
+        fullName: u.fullName,
+        email: u.email,
+      },
     });
   } catch (err) {
     console.error("OTP verification error:", err);
@@ -87,4 +108,4 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-export default { verifyOtp, enteremail };
+export default { enteremail, verifyOtp };

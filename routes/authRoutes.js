@@ -2,7 +2,7 @@ import express from "express";
 
 
 import {enteremail,verifyOtp} from '../controller/auth/login.js'
-import register from '../controller/auth/register.js'
+import {register} from '../controller/auth/register.js'
 import logout from '../controller/auth/logout.js'
 
 
