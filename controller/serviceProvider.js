@@ -14,7 +14,7 @@ return res.status(200).json({services});
     }
 
 
-    
+
 catch(err){
     return res.status(400).json({success:false,msg:'Failed'});
 }
@@ -22,6 +22,12 @@ catch(err){
 }
 
 
+
+
 export default getAllServices;
+
+
+
+
 
 

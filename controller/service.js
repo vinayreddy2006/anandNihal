@@ -69,4 +69,30 @@ export const getServices = async (req, res) => {
 // };
 
 
-export default {addService,getServices};
+
+
+export const deleteService = async (req, res) => {
+  try {
+    const serviceId = req.params.id; // <-- get ID from URL
+    const providerId = req.provider._id;
+
+    // Ensure the service belongs to this provider
+    const service = await Service.findOne({ _id: serviceId, providers: providerId });
+    if (!service) {
+      return res.status(404).json({ success: false, msg: "Service not found or not authorized" });
+    }
+
+    await Service.findByIdAndDelete(serviceId);
+
+    // Remove references from provider and category
+    await ServiceProvider.findByIdAndUpdate(providerId, { $pull: { services: serviceId } });
+    await Category.findByIdAndUpdate(service.categories, { $pull: { services: serviceId } });
+
+    res.status(200).json({ success: true, msg: "Service deleted successfully" });
+  } catch (err) {
+    console.error("Delete Service Error:", err);
+    res.status(500).json({ success: false, msg: "Server error" });
+  }
+};
+
+export default {addService,getServices,deleteService};

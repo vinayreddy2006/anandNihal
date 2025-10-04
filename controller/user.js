@@ -19,16 +19,16 @@ export const deleteUser = async (req, res) => {
 // --- Get Favorites ---
 export const getUserFavorites = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate({
-      path: "favorites",
-      populate: { path: "category", select: "name slug" },
-    });
+    const user = await User.findById(req.user._id);
 
     if (!user) {
       return res.status(404).json({ success: false, msg: "User not found" });
     }
 
-    return res.status(200).json({ success: true, favorites: user.favorites });
+    return res.status(200).json({
+      success: true,
+      favorites: user.favorites || [],
+    });
   } catch (err) {
     console.error("Get Favorites Error:", err);
     return res.status(500).json({ success: false, msg: "Server error" });
@@ -61,7 +61,7 @@ export const addFavorite = async (req, res) => {
 // --- Remove Favorite ---
 export const removeFavorite = async (req, res) => {
   try {
-    const { serviceId } = req.params;
+    const { serviceId } = req.body;
 
     if (!serviceId) {
       return res.status(400).json({ success: false, msg: "Service ID is required" });
@@ -82,3 +82,23 @@ export const removeFavorite = async (req, res) => {
 };
 
 
+export const getUserDetails=async(req,res)=>{
+    try{
+       const id=req.user._id;
+
+       const userDetails=await User.findById(id);
+
+       if(!userDetails) {
+        return res.status(200).json({success:false,msg:"No such User"}); 
+       }
+
+       return res.status(200).send(userDetails);
+    }
+    catch(err){
+        return res.json({success:false,msg:"Failed"});
+    }
+}
+
+export default {
+    getUserDetails,removeFavorite,addFavorite,getUserFavorites,deleteUser
+}
