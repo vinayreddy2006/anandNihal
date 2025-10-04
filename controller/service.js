@@ -47,13 +47,13 @@ export const addService = async (req, res) => {
 
 
 
-// export const getServices = async (req, res) => {
-//   const services = await Service.find({})
-//     .populate('categories', 'name slug')
-//     .populate('providers', 'name location');
- 
-//   res.status(201).json({success:true,msg:"Service Fetched"});
-// };
+export const getServices = async (req, res) => {
+  const services = await Service.find({})
+    .populate('categories', 'name slug')
+    .populate('providers', 'name location');
+  
+ return res.status(201).send(services);
+};
 
 
 // export const getServiceById = async (req, res) => {
@@ -69,4 +69,4 @@ export const addService = async (req, res) => {
 // };
 
 
-export default addService;
+export default {addService,getServices};
