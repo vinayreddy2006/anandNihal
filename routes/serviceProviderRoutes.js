@@ -11,7 +11,7 @@ const aRouter=express.Router();
 aRouter.post('/addService',protectProvider,addService);
 aRouter.get('/getallServicesByProvider',protectProvider,getAllServices);
 aRouter.get('/allservices',getServices);
-
+// aRouter.put('/updateProvider',protectProvider,updateService);
 
 aRouter.delete('/deleteService/:id',protectProvider,deleteService);
 

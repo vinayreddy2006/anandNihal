@@ -1,5 +1,5 @@
 import express from "express";
-import { getUserDetails, getUserFavorites,removeFavorite,addFavorite,deleteUser } from "../controller/user.js";
+import { getUserDetails, getUserFavorites,removeFavorite,addFavorite,deleteUser, updateProfile } from "../controller/user.js";
 import  protect  from "../middlewares/userAuth.js";
 
 const uRouter=express.Router();
@@ -12,7 +12,7 @@ uRouter.delete('/deleteAccount',protect,deleteUser);
 uRouter.get('/getFavorite',protect,getUserFavorites);
 uRouter.post('/addFavorite',protect,addFavorite);
 uRouter.delete('/removeFavorite',protect,removeFavorite);
-
+uRouter.put('/updateUser',protect,updateProfile);
 
 
 

@@ -99,6 +99,32 @@ export const getUserDetails=async(req,res)=>{
     }
 }
 
+
+export const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.fullName = req.body.fullName || user.fullName;
+      user.username = req.body.username || user.username;
+      user.phone = req.body.phone || user.phone;
+      user.location = req.body.location || user.location;
+      const updatedUser = await user.save();
+      res.status(200).json({
+        _id: updatedUser._id,
+        fullName: updatedUser.fullName,
+        username: updatedUser.username,
+        phone: updatedUser.phone,
+        location: updatedUser.location,
+      });
+    } else {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
 export default {
-    getUserDetails,removeFavorite,addFavorite,getUserFavorites,deleteUser
+    getUserDetails,removeFavorite,addFavorite,getUserFavorites,deleteUser,updateProfile
 }
