@@ -13,6 +13,9 @@ import cRouter from './routes/categoryRoutes.js';
 import uRouter from './routes/userRoutes.js';
 import mRouter from './routes/messageRoutes.js';
 import coRouter from './routes/conversationRoutes.js';
+import rRouter from './routes/reviewRoutes.js';
+
+
 
 const PORT = process.env.PORT || 4000;
 
@@ -40,6 +43,7 @@ app.use("/category", cRouter);
 app.use("/user", uRouter);
 app.use('/message', mRouter);
 app.use('/convo', coRouter);
+app.use('/review',rRouter);
 
 // --- UPDATE SERVER LISTENING ---
 server.listen(PORT, () => {

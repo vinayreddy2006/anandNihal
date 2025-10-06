@@ -3,12 +3,10 @@ import user from "../../model/userModel.js";
 import sendOtpEmail from "../../utils/sendOtp.js";
 import sendWelcomeEmail from "../../utils/sendWelcomeOtp.js";
 
-// Helper function to generate JWT
 const generateToken = (id, email) => {
   return jwt.sign({ id, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// ✅ Step 1: Enter email → send OTP
 export const enteremail = async (req, res) => {
   const { email } = req.body;
 
@@ -26,7 +24,7 @@ export const enteremail = async (req, res) => {
     const otp = String(Math.floor(100000 + Math.random() * 900000));
 
     u.Otp = otp;
-    u.OtpExpireAt = Date.now() + 2 * 60 * 1000; // 2 mins
+    u.OtpExpireAt = Date.now() + 2 * 60 * 1000; 
     await u.save();
 
     const mailOptions = {
@@ -45,13 +43,13 @@ export const enteremail = async (req, res) => {
   }
 };
 
-// ✅ Step 2: Verify OTP → login + set cookie
 export const verifyOtp = async (req, res) => {
   const { email, userOtp } = req.body;
 
   if (!email) {
     return res.status(400).json({ success: false, msg: "Email is required" });
   }
+
 
   try {
     const u = await user.findOne({ email });
