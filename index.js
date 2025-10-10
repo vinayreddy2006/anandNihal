@@ -35,6 +35,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.get('/cronjob', (req, res) => {
+  res.status(200).json({ status: 'UP', message: 'API is running' });
+});
+
 // --- ROUTES ---
 app.use('/auth', router);
 app.use('/provider/auth', pRouter);
