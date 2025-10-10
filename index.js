@@ -49,6 +49,11 @@ app.use('/message', mRouter);
 app.use('/convo', coRouter);
 app.use('/review',rRouter);
 
+const notFound = (req, res, next) => {
+  res.status(404).json({ success: false, message: `Not Found - ${req.originalUrl}` });
+};
+app.use(notFound);
+
 // --- UPDATE SERVER LISTENING ---
 server.listen(PORT, () => {
     console.log("Server Started at PORT", PORT);
